@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: foo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: foo-app
+  template:
+    metadata:
+      labels:
+        app: foo-app
+    spec:
+      containers:
+        - name: foo-app
+          image: hashicorp/http-echo
+          ports:
+            - name: http-port
+              containerPort: 5000
+          args:
+            - "-text=\"Hello! I'm foo application.\""
+            - "-listen=:5000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: foo-service
+spec:
+  type: ClusterIP
+  ports:
+    - name: http-port
+      port: 5000
+      targetPort: 5000
+      protocol: TCP
+  selector:
+    app: foo-app
